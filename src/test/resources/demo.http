@@ -1,0 +1,124 @@
+### Get Token
+
+POST https://merchant-sandbox.qpay.mn/v2/auth/token
+Authorization: Basic VEVTVF9NRVJDSEFOVDoxMjM0NTY=
+
+> {%
+    client.global.set("accessToken", response.body.access_token);
+    client.global.set("refreshToken", response.body.refresh_token);
+%}
+
+### Refresh Token
+
+POST https://merchant-sandbox.qpay.mn/v2/auth/refresh
+Authorization: Bearer {{refreshToken}}
+
+> {%
+    client.global.set("accessToken", response.body.access_token);
+    client.global.set("refreshToken", response.body.refresh_token);
+%}
+
+### Create Invoice
+
+POST https://merchant-sandbox.qpay.mn/v2/invoice
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "invoice_code": "TEST_INVOICE",
+  "sender_invoice_no": "1234567",
+  "invoice_receiver_code": "terminal",
+  "invoice_description":"test",
+  "amount": 100,
+  "callback_url":"https://bd5492c3ee85.ngrok.io/payments?payment_id=1234567"
+}
+
+> {%
+    client.global.set("invoiceId", response.body.invoice_id);
+%}
+
+### Create Invoice 2
+
+POST https://merchant-sandbox.qpay.mn/v2/invoice
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "invoice_code": "TEST_INVOICE",
+  "sender_invoice_no": "1234567",
+  "sender_invoice_code": null,
+  "invoice_receiver_code": "terminal",
+  "invoice_receiver_data": null,
+  "invoice_description": "test",
+  "invoice_due_date": null,
+  "allow_partial": false,
+  "minimum_amount": null,
+  "allow_exceed": false,
+  "maximum_amount": null,
+  "amount": 100,
+  "callback_url": "https://bd5492c3ee85.ngrok.io/payments?payment_id=1234567",
+  "note": null,
+  "lines": null
+}
+
+> {%
+    client.global.set("invoiceId", response.body.invoice_id);
+%}
+
+### Get Invoice
+
+GET https://merchant-sandbox.qpay.mn/v2/invoice/3d78ad9d-9c33-41bb-9690-7da958b8f218
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+### Cancel Invoice
+
+DELETE https://merchant-sandbox.qpay.mn/v2/invoice/6e0cee28-ef90-4016-9e91-19cefca9a52d
+Authorization: Bearer {{accessToken}}
+
+### Find Payments
+
+GET https://merchant-sandbox.qpay.mn/v2/payment/6e0cee28-ef90-4016-9e91-19cefca9a52d
+Authorization: Bearer {{accessToken}}
+
+### Check Payments
+
+POST https://merchant-sandbox.qpay.mn/v2/payment/check
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+	"object_type": "INVOICE",
+	"object_id"  : "071f45e6-b6e6-4562-a470-8457269d251a",
+	"offset"     : {
+	    "page_number": 1,
+	    "page_limit" : 100
+	  }
+}
+
+### Cancel Payment
+
+DELETE https://merchant-sandbox.qpay.mn/v2/payment/cancel/:payment_id
+Authorization: Bearer {{accessToken}}
+
+### Refund Payment
+
+DELETE https://merchant-sandbox.qpay.mn/v2/payment/refund/:payment_id
+Authorization: Bearer {{accessToken}}
+
+### Payment List
+
+POST https://merchant-sandbox.qpay.mn/v2/payment/list
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "object_type": "MERCHANT",
+	"object_id": "da870def-3f07-42b0-bfc3-6cfd6d6c8d22",
+	"offset": {
+	    "page_number": 1,
+	    "page_limit" : 100
+	}
+}
