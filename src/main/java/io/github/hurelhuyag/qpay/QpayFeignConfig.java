@@ -4,7 +4,6 @@ import feign.Logger;
 import feign.RequestInterceptor;
 import org.springframework.cloud.openfeign.FeignClientProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
@@ -16,7 +15,7 @@ public class QpayFeignConfig {
 
     private final JsonMapper objectMapper = new JsonMapper();
 
-    private TokenRes tokenRes;
+    private volatile TokenRes tokenRes;
 
     private final FeignClientProperties feignClientProperties;
     private final QpayProperties config;
@@ -67,10 +66,18 @@ public class QpayFeignConfig {
     public RequestInterceptor requestInterceptor() {
         return requestTemplate -> {
             if (tokenRes == null) {
-                obtainToken();
+                synchronized (this) {
+                    if (tokenRes == null) {
+                        obtainToken();
+                    }
+                }
             } else {
                 if (tokenRes.isExpired()) {
-                    refreshToken();
+                    synchronized (this) {
+                        if (tokenRes.isExpired()) {
+                            refreshToken();
+                        }
+                    }
                 }
             }
             requestTemplate.header("Authorization", "Bearer " + tokenRes.accessToken());
