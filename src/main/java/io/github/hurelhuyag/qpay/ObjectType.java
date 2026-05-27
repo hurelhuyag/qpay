@@ -1,5 +1,22 @@
 package io.github.hurelhuyag.qpay;
 
+/**
+ * Обьектын төрөл. Used as {@code object_type} across the payment endpoints.
+ */
 public enum ObjectType {
-    MERCHANT, INVOICE, PAYMENT
+
+    /** Байгууллага */
+    MERCHANT,
+
+    /** Нэхэмжлэх */
+    INVOICE,
+
+    /** QR код */
+    QR,
+
+    /** Бүтээгдэхүүн */
+    ITEM,
+
+    /** Гүйлгээ */
+    PAYMENT
 }

@@ -22,7 +22,7 @@ public interface QpayApi {
     List<PaymentListRes> listPayments(@RequestBody PaymentListReq req);
 
     @GetMapping("/v2/payment/{id}")
-    Object findPayments(@PathVariable String id);
+    PaymentGetRes findPayments(@PathVariable String id);
 
     @PostMapping("/v2/payment/check")
     PaymentCheckRes checkPayments(@RequestBody PaymentCheckReq req);

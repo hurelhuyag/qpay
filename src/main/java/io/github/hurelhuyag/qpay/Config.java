@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @AutoConfiguration
-@EnableFeignClients(clients = QpayApi.class)
+@EnableFeignClients(clients = {QpayApi.class, QpayAuthApi.class})
 @EnableConfigurationProperties(QpayProperties.class)
 public class Config {
 

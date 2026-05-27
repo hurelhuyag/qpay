@@ -1,12 +1,14 @@
-/*
 package io.github.hurelhuyag.qpay;
 
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 
-import java.util.List;
-
-@FeignClient(name = "QpayAuthApi", primary = false)
+@FeignClient(
+    name = "QpayAuthApi",
+    url = "${spring.cloud.openfeign.client.config.QpayApi.url}",
+    primary = false
+)
 public interface QpayAuthApi {
 
     @PostMapping("/v2/auth/token")
@@ -16,4 +18,3 @@ public interface QpayAuthApi {
     TokenRes refreshToken(@RequestHeader("Authorization") String authorization);
 
 }
-*/

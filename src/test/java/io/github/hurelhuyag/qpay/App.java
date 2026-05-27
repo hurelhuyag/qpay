@@ -25,18 +25,17 @@ public class App {
             var invoice = qpayApi.createInvoice(new InvoiceCreateReq(
                     "TEST_INVOICE",
                     "1234567",
-                    null,
                     "terminal",
                     null,
                     "test",
                     null,
+                    false,
                     false,
                     null,
                     false,
                     null,
                     BigDecimal.valueOf(100),
                     "https://bd5492c3ee85.ngrok.io/payments?payment_id=1234567",
-                    null,
                     null
             ));
             log.error("invoiceId: {}", invoice.invoiceId());

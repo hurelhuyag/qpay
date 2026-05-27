@@ -1,27 +1,19 @@
 package io.github.hurelhuyag.qpay;
 
-import feign.Logger;
 import feign.RequestInterceptor;
-import org.springframework.cloud.openfeign.FeignClientProperties;
 import org.springframework.context.annotation.Bean;
-import tools.jackson.databind.json.JsonMapper;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Base64;
 
 public class QpayFeignConfig {
 
-    private final JsonMapper objectMapper = new JsonMapper();
-
     private volatile TokenRes tokenRes;
 
-    private final FeignClientProperties feignClientProperties;
+    private final QpayAuthApi authApi;
     private final QpayProperties config;
 
-    public QpayFeignConfig(FeignClientProperties feignClientProperties, QpayProperties config) {
-        this.feignClientProperties = feignClientProperties;
+    public QpayFeignConfig(QpayAuthApi authApi, QpayProperties config) {
+        this.authApi = authApi;
         this.config = config;
     }
 
@@ -31,35 +23,12 @@ public class QpayFeignConfig {
     }*/
 
     private void obtainToken() {
-        try {
-            var url = new URL(feignClientProperties.getConfig().get("QpayApi").getUrl()+"/v2/auth/token");
-            var conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            try {
-                conn.addRequestProperty("Authorization", "Basic " + new String(Base64.getEncoder().encode((config.login()+":"+config.password()).getBytes())));
-                tokenRes = objectMapper.readValue(conn.getInputStream(), TokenRes.class);
-            } finally {
-                conn.disconnect();
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        var credentials = Base64.getEncoder().encodeToString((config.login() + ":" + config.password()).getBytes());
+        tokenRes = authApi.getToken("Basic " + credentials);
     }
 
     private void refreshToken() {
-        try {
-            var url = new URL(feignClientProperties.getConfig().get("QpayApi").getUrl()+"/v2/auth/refresh");
-            var conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            try {
-                conn.addRequestProperty("Authorization", "Bearer " + tokenRes.refreshToken());
-                tokenRes = objectMapper.readValue(conn.getInputStream(), TokenRes.class);
-            } finally {
-                conn.disconnect();
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        tokenRes = authApi.refreshToken("Bearer " + tokenRes.refreshToken());
     }
 
     @Bean
